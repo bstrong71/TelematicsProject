@@ -8,11 +8,6 @@ public class VehicleInfo {
 
     // ***** empty constructor *****
     public VehicleInfo() {
-        this.VIN = VIN;
-        this.odometer = odometer;
-        this.gasConsumed = gasConsumed;
-        this.odoLastOilChg = odoLastOilChg;
-        this.engSizeL = engSizeL;
     }
 
     // ***** getters and setters *****

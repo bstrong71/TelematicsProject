@@ -1,13 +1,9 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-
+        // *** take inputs from CLI ***
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter VIN number: ");
         String vinEntry = scanner.nextLine();
@@ -29,34 +25,19 @@ public class Main {
         String engineEntry = scanner.nextLine();
         double engineNum = Double.parseDouble(engineEntry);
 
-        VehicleInfo newVehicle = new VehicleInfo();
+        // *** new vehicle info instance ***
+        VehicleInfo newVehicleInfo = new VehicleInfo();
+            newVehicleInfo.setVIN(vinNum);
+            newVehicleInfo.setOdometer(odoNum);
+            newVehicleInfo.setGasConsumed(gasNum);
+            newVehicleInfo.setOdoLastOilChg(oilOdoNum);
+            newVehicleInfo.setEngSizeL(engineNum);
 
+        TelematicsService newTelematicsService = new TelematicsService();
 
-
-
-        String filename = "test.json";
-        String[] fileContents = getFileContents(filename);
-
-
-
+        newTelematicsService.report(newVehicleInfo);
     }
 
 
-    public static String[] getFileContents (String fileName) {
-        File file = new File (fileName);
-        try {
-            Scanner fileScanner = new Scanner(file);
-            List<String> fileContents = new ArrayList<>();
-            while (fileScanner.hasNext()) {
-                fileContents.add(fileScanner.nextLine());
-            }
-            return fileContents.toArray(new String[0]); //Converts the list to an array
-        } //Since this time we are asking for data back from the file
-        //We have to specify what to do if it isn't found
-        catch (FileNotFoundException ex) {
-            System.out.println("Could not find file *" + fileName + "*");
-            ex.printStackTrace();
-            return null;
-        }
-    }
+
 }
