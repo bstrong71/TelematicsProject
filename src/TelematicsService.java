@@ -11,7 +11,7 @@ public class TelematicsService {
 
     public void report(VehicleInfo newVehicleInfo){
         createdJsonFile(newVehicleInfo);
-        findJsonFile(newVehicleInfo);
+        findJsonFile();
 
     }
 
@@ -32,12 +32,12 @@ public class TelematicsService {
         }
     }
 
-    public void findJsonFile(VehicleInfo newVehicleInfo) {
+    public void findJsonFile() {
         try{
             File file = new File(".");
             for (File f : file.listFiles()) {
                 if (f.getName().endsWith(".json")) {
-                    System.out.println(f.getName());
+//                    System.out.println(f.getName());
 
                     File newFile = new File(f.getName());
                     try {
@@ -46,18 +46,13 @@ public class TelematicsService {
                         while (fileScanner.hasNext()) {
                             bazzContents.add(fileScanner.nextLine());
                         }
-                        return bazzContents.toArray(new String[0]); //Converts the list to an array
-
                         ObjectMapper newMapper = new ObjectMapper();
-                        VehicleInfo vi = newMapper.readValue("1234.json", VehicleInfo.class);
-
+                        VehicleInfo vInfo = newMapper.readValue(newFile, VehicleInfo.class);
                     }
                     catch (FileNotFoundException ex) {
                         System.out.println("Could not find file *" + f.getName() + "*");
                         ex.printStackTrace();
-                        return null;
                     }
-
                 }
             }
         }
