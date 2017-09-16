@@ -1,5 +1,6 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,22 +38,26 @@ public class TelematicsService {
             for (File f : file.listFiles()) {
                 if (f.getName().endsWith(".json")) {
                     System.out.println(f.getName());
-                    // Now you have a File object named "f".
-                    // You can use this to create a new instance of Scanner
 
-//                    String[] fileContents = ("list.txt");
+                    File newFile = new File(f.getName());
+                    try {
+                        Scanner fileScanner = new Scanner(newFile);
+                        List<String> bazzContents = new ArrayList<>();
+                        while (fileScanner.hasNext()) {
+                            bazzContents.add(fileScanner.nextLine());
+                        }
+                        return bazzContents.toArray(new String[0]); //Converts the list to an array
 
-                    File file = new File (fileName);
+                        ObjectMapper newMapper = new ObjectMapper();
+                        VehicleInfo vi = newMapper.readValue("1234.json", VehicleInfo.class);
 
-                    Scanner fileScanner = new Scanner(f.getName());
-                    List<String> fileContents = new ArrayList<>();
-                    while (fileScanner.hasNext()) {
-                        fileContents.add(fileScanner.nextLine());
                     }
-                    return fileContents.toArray(new String[0]);
+                    catch (FileNotFoundException ex) {
+                        System.out.println("Could not find file *" + f.getName() + "*");
+                        ex.printStackTrace();
+                        return null;
+                    }
 
-                    ObjectMapper mapper = new ObjectMapper();
-                    VehicleInfo vi = mapper.readValue("1234.json", VehicleInfo.class);
                 }
             }
         }
