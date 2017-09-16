@@ -51,7 +51,6 @@ public class VehicleInfo {
         this.engSizeL = engSizeL;
     }
 
-
 }
 
 
