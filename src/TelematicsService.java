@@ -12,9 +12,10 @@ public class TelematicsService {
     public void report(VehicleInfo newVehicleInfo){
         createdJsonFile(newVehicleInfo);
         findJsonFile();
+        dashboardHtml();
 
     }
-
+    // *** create json file with vehicle info ***
     public void createdJsonFile(VehicleInfo newVehicleInfo) {
         try {
             File file = new File(newVehicleInfo.getVIN() + ".json");
@@ -31,7 +32,7 @@ public class TelematicsService {
             ex.printStackTrace();
         }
     }
-
+    // *** find all json files and convert back into vehicle info objects
     public void findJsonFile() {
         try{
             File file = new File(".");
@@ -61,7 +62,48 @@ public class TelematicsService {
         }
 
     }
+    // *** update dashboard.html file
+    public void dashboardHtml() {
+        try {
+            String fileName = 1234 + ".html";
+            File file = new File(fileName);
+            FileWriter fileWriter = new FileWriter(file);
 
+            String htmlString = "<html>\n" +
+                    "  <title>Vehicle Telematics Dashboard</title>\n" +
+                    "  <body>\n" +
+                    "    <h1 align=\"center\">Averages for # vehicles</h1>\n" +
+                    "    <table align=\"center\">\n" +
+                    "        <tr>\n" +
+                    "            <th>Odometer (miles) |</th><th>Consumption (gallons) |</th><th>Last Oil Change |</th><th>Engine Size (liters)</th>\n" +
+                    "        </tr>\n" +
+                    "        <tr>\n" +
+                    "            <td align=\"center\">#</td><td align=\"center\">#</td><td align=\"center\">#</td align=\"center\"><td align=\"center\">#</td>\n" +
+                    "        </tr>\n" +
+                    "    </table>\n" +
+                    "    <h1 align=\"center\">History</h1>\n" +
+                    "    <table align=\"center\" border=\"1\">\n" +
+                    "        <tr>\n" +
+                    "            <th>VIN</th><th>Odometer (miles)</th><th>Consumption (gallons)</th><th>Last Oil Change</th><th>Engine Size (liters)</th>\n" +
+                    "        </tr>\n" +
+                    "        <tr>\n" +
+                    "            <td align=\"center\">#</td><td align=\"center\">#</td><td align=\"center\">#</td><td align=\"center\">#</td align=\"center\"><td align=\"center\">#</td>\n" +
+                    "        </tr>\n" +
+                    "        <tr>\n" +
+                    "            <td align=\"center\">45435</td><td align=\"center\">123</td><td align=\"center\">234</td><td align=\"center\">345</td align=\"center\"><td align=\"center\">4.5</td>\n" +
+                    "        </tr>\n" +
+                    "    </table>\n" +
+                    "  </body>\n" +
+                    "</html>\n";
+
+            fileWriter.write(htmlString);
+
+            fileWriter.close();
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 
 
 }
