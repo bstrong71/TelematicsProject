@@ -12,14 +12,14 @@ public class TelematicsService {
     public void report(VehicleInfo newVehicleInfo){
         createdJsonFile(newVehicleInfo);
         findJsonFile();
-        dashboardHtml();
+        dashboardHtml(newVehicleInfo);
 
     }
     // *** create json file with vehicle info ***
     public void createdJsonFile(VehicleInfo newVehicleInfo) {
         try {
-            File file = new File(newVehicleInfo.getVIN() + ".json");
-            FileWriter fileWriter = new FileWriter(file);
+            File fileForJson = new File(newVehicleInfo.getVIN() + ".json");
+            FileWriter fileWriter = new FileWriter(fileForJson);
 
             ObjectMapper mapper = new ObjectMapper();
             String json = mapper.writeValueAsString(newVehicleInfo);
@@ -63,13 +63,13 @@ public class TelematicsService {
 
     }
     // *** update dashboard.html file
-    public void dashboardHtml() {
+    public void dashboardHtml(VehicleInfo newVehicleInfo) {
         try {
-            String fileName = 1234 + ".html";
-            File file = new File(fileName);
-            FileWriter fileWriter = new FileWriter(file);
+            String fileName = newVehicleInfo.getVIN() + ".html";
+            File fileForHtml = new File(fileName);
+            FileWriter fileWriter = new FileWriter(fileForHtml);
 
-            String htmlString = "<html>\n" +
+            String htmlString = String.format("<html>\n" +
                     "  <title>Vehicle Telematics Dashboard</title>\n" +
                     "  <body>\n" +
                     "    <h1 align=\"center\">Averages for # vehicles</h1>\n" +
@@ -87,14 +87,14 @@ public class TelematicsService {
                     "            <th>VIN</th><th>Odometer (miles)</th><th>Consumption (gallons)</th><th>Last Oil Change</th><th>Engine Size (liters)</th>\n" +
                     "        </tr>\n" +
                     "        <tr>\n" +
-                    "            <td align=\"center\">#</td><td align=\"center\">#</td><td align=\"center\">#</td><td align=\"center\">#</td align=\"center\"><td align=\"center\">#</td>\n" +
+                    "            <td align=\"center\">%d</td><td align=\"center\">%.1f</td><td align=\"center\">%.1f</td><td align=\"center\">%.1f</td align=\"center\"><td align=\"center\">%.1f</td>\n" +
                     "        </tr>\n" +
                     "        <tr>\n" +
                     "            <td align=\"center\">45435</td><td align=\"center\">123</td><td align=\"center\">234</td><td align=\"center\">345</td align=\"center\"><td align=\"center\">4.5</td>\n" +
                     "        </tr>\n" +
                     "    </table>\n" +
                     "  </body>\n" +
-                    "</html>\n";
+                    "</html>\n", newVehicleInfo.getVIN(), newVehicleInfo.getOdometer(), newVehicleInfo.getGasConsumed(), newVehicleInfo.getOdoLastOilChg(), newVehicleInfo.getEngSizeL());
 
             fileWriter.write(htmlString);
 
