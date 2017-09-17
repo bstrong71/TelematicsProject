@@ -6,6 +6,7 @@ public class VehicleInfo {
     double odoLastOilChg;
     double engSizeL;
 
+
     // ***** empty constructor *****
     public VehicleInfo() {
     }
