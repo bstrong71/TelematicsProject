@@ -11,7 +11,7 @@ public class TelematicsService {
 
     public void report(VehicleInfo newVehicleInfo){
         createdJsonFile(newVehicleInfo);
-        findJsonFile();
+//        findAllJson();
         dashboardHtml(newVehicleInfo);
 
     }
@@ -32,123 +32,88 @@ public class TelematicsService {
             ex.printStackTrace();
         }
     }
+
+    public static List<String> getFileContents (String fileName) {
+        File file = new File (fileName);
+        try {
+            Scanner fileScanner = new Scanner(file);
+            List<String> fileContents = new ArrayList<>();
+            while (fileScanner.hasNext()) {
+                fileContents.add(fileScanner.nextLine());
+            }
+            return fileContents;
+        } catch (FileNotFoundException ex) {
+            System.out.println("Could not find file *" + fileName + "*");
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
     // *** find all json files and convert back into vehicle info objects
-    public void findJsonFile() {
-        try{
-            File file = new File(".");
-            for (File f : file.listFiles()) {
-                if (f.getName().endsWith(".json")) {
+    public List<VehicleInfo> findAllJson() {
+        File file = new File(".");
+        ArrayList<VehicleInfo> allVehicles = new ArrayList<>();
 
-
-                System.out.println("f.getName: " + f.getName());
-
-                    File newFile = new File(f.getName());
-                    try {
-                        Scanner fileScanner = new Scanner(newFile);
-                        List<String> bazzContents = new ArrayList<>();
-                        while (fileScanner.hasNext()) {
-                            bazzContents.add(fileScanner.nextLine());
-                        }
-                        ObjectMapper newMapper = new ObjectMapper();
-                        VehicleInfo vInfo = newMapper.readValue(newFile, VehicleInfo.class);
-                    }
-                    catch (FileNotFoundException ex) {
-                        System.out.println("Could not find file *" + f.getName() + "*");
-                        ex.printStackTrace();
-                    }
+        for (File f : file.listFiles()) {
+            if (f.getName().endsWith(".json")) {
+                String vehicleJSON = getFileContents(f.getName()).get(0);
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    VehicleInfo vi = mapper.readValue(vehicleJSON, VehicleInfo.class);
+                    allVehicles.add(vi);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
-        catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
+        return allVehicles;
     }
+
     // *** update dashboard.html file
     public void dashboardHtml(VehicleInfo newVehicleInfo) {
         try {
-            File file = new File(".");
-            for (File h : file.listFiles()) {
+            String fileName = "dashboard.html";
+            File fileForHtml = new File(fileName);
+            FileWriter fileWriter = new FileWriter(fileForHtml);
 
-                if (h.getName().endsWith(".json")){
+            String preamble = ("<html>\n" +
+                    "  <title>Vehicle Telematics Dashboard</title>\n" +
+                    "  <body>\n" +
+                    "    <h1 align=\"center\">Averages for # vehicles</h1>\n" +
+                    "    <table align=\"center\">\n" +
+                    "        <tr>\n" +
+                    "            <th>Odometer (miles) |</th><th>Consumption (gallons) |</th><th>Last Oil Change |</th><th>Engine Size (liters)</th>\n" +
+                    "        </tr>\n" +
+                    "        <tr>\n" +
+                    "            <td align=\"center\">#</td><td align=\"center\">#</td><td align=\"center\">#</td align=\"center\"><td align=\"center\">#</td>\n" +
+                    "        </tr>\n" +
+                    "    </table>\n" +
+                    "    <h1 align=\"center\">History</h1>\n" +
+                    "    <table align=\"center\" border=\"1\">\n" +
+                    "        <tr>\n" +
+                    "            <th>VIN</th><th>Odometer (miles)</th><th>Consumption (gallons)</th><th>Last Oil Change</th><th>Engine Size (liters)</th>\n" +
+                    "        </tr>\n");
 
+            String carData="";
+            for(VehicleInfo car: findAllJson()) {
+                carData += ("        <tr>\n" +
+                        "            <td align=\"center\">" + car.getVIN() + "</td><td align=\"center\">" + car.getOdometer() + "</td><td align=\"center\">" + car.getGasConsumed() + "</td><td align=\"center\">" + car.getOdoLastOilChg() + "</td align=\"center\"><td align=\"center\">" + car.getEngSizeL() + "</td>\n" +
+                        "        </tr>\n");
 
-                    String fileName = newVehicleInfo.getVIN() + ".html";
-                    File fileForHtml = new File(fileName);
-                    FileWriter fileWriter = new FileWriter(fileForHtml);
-
-                    String htmlString = String.format("<html>\n" +
-                            "  <title>Vehicle Telematics Dashboard</title>\n" +
-                            "  <body>\n" +
-                            "    <h1 align=\"center\">Averages for # vehicles</h1>\n" +
-                            "    <table align=\"center\">\n" +
-                            "        <tr>\n" +
-                            "            <th>Odometer (miles) |</th><th>Consumption (gallons) |</th><th>Last Oil Change |</th><th>Engine Size (liters)</th>\n" +
-                            "        </tr>\n" +
-                            "        <tr>\n" +
-                            "            <td align=\"center\">#</td><td align=\"center\">#</td><td align=\"center\">#</td align=\"center\"><td align=\"center\">#</td>\n" +
-                            "        </tr>\n" +
-                            "    </table>\n" +
-                            "    <h1 align=\"center\">History</h1>\n" +
-                            "    <table align=\"center\" border=\"1\">\n" +
-                            "        <tr>\n" +
-                            "            <th>VIN</th><th>Odometer (miles)</th><th>Consumption (gallons)</th><th>Last Oil Change</th><th>Engine Size (liters)</th>\n" +
-                            "        </tr>\n" +
-                            "        <tr>\n" +
-                            "            <td align=\"center\">%d</td><td align=\"center\">%.1f</td><td align=\"center\">%.1f</td><td align=\"center\">%.1f</td align=\"center\"><td align=\"center\">%.1f</td>\n" +
-                            "        </tr>\n" +
-                            "        <tr>\n" +
-                            "            <td align=\"center\">45435</td><td align=\"center\">123</td><td align=\"center\">234</td><td align=\"center\">345</td align=\"center\"><td align=\"center\">4.5</td>\n" +
-                            "        </tr>\n" +
-                            "    </table>\n" +
-                            "  </body>\n" +
-                            "</html>\n", newVehicleInfo.getVIN(), newVehicleInfo.getOdometer(), newVehicleInfo.getGasConsumed(), newVehicleInfo.getOdoLastOilChg(), newVehicleInfo.getEngSizeL());
-
-                    fileWriter.write(htmlString);
-
-                    fileWriter.close();
-                }
             }
 
-//            String fileName = newVehicleInfo.getVIN() + ".html";
-//            File fileForHtml = new File(fileName);
-//            FileWriter fileWriter = new FileWriter(fileForHtml);
-//
-//            String htmlString = String.format("<html>\n" +
-//                    "  <title>Vehicle Telematics Dashboard</title>\n" +
-//                    "  <body>\n" +
-//                    "    <h1 align=\"center\">Averages for # vehicles</h1>\n" +
-//                    "    <table align=\"center\">\n" +
-//                    "        <tr>\n" +
-//                    "            <th>Odometer (miles) |</th><th>Consumption (gallons) |</th><th>Last Oil Change |</th><th>Engine Size (liters)</th>\n" +
-//                    "        </tr>\n" +
-//                    "        <tr>\n" +
-//                    "            <td align=\"center\">#</td><td align=\"center\">#</td><td align=\"center\">#</td align=\"center\"><td align=\"center\">#</td>\n" +
-//                    "        </tr>\n" +
-//                    "    </table>\n" +
-//                    "    <h1 align=\"center\">History</h1>\n" +
-//                    "    <table align=\"center\" border=\"1\">\n" +
-//                    "        <tr>\n" +
-//                    "            <th>VIN</th><th>Odometer (miles)</th><th>Consumption (gallons)</th><th>Last Oil Change</th><th>Engine Size (liters)</th>\n" +
-//                    "        </tr>\n" +
-//                    "        <tr>\n" +
-//                    "            <td align=\"center\">%d</td><td align=\"center\">%.1f</td><td align=\"center\">%.1f</td><td align=\"center\">%.1f</td align=\"center\"><td align=\"center\">%.1f</td>\n" +
-//                    "        </tr>\n" +
-//                    "        <tr>\n" +
-//                    "            <td align=\"center\">45435</td><td align=\"center\">123</td><td align=\"center\">234</td><td align=\"center\">345</td align=\"center\"><td align=\"center\">4.5</td>\n" +
-//                    "        </tr>\n" +
-//                    "    </table>\n" +
-//                    "  </body>\n" +
-//                    "</html>\n", newVehicleInfo.getVIN(), newVehicleInfo.getOdometer(), newVehicleInfo.getGasConsumed(), newVehicleInfo.getOdoLastOilChg(), newVehicleInfo.getEngSizeL());
-//
-//            fileWriter.write(htmlString);
-//
-//            fileWriter.close();
+            String closing = ("</table>\n" +
+                    "  </body>\n" +
+                    "</html>\n");
+
+            String htmlString = preamble + carData + closing;
+
+            fileWriter.write(htmlString);
+
+            fileWriter.close();
         }
         catch (IOException ex) {
             ex.printStackTrace();
         }
     }
-
-
 }
