@@ -76,7 +76,26 @@ public class TelematicsService {
             File fileForHtml = new File(fileName);
             FileWriter fileWriter = new FileWriter(fileForHtml);
 
-            String preamble = ("<html>\n" +
+            int totalCars = 0;
+            double totalOdo = 0;
+            double totalGas = 0;
+            double totalOil = 0;
+            double totalEng = 0;
+
+            for(VehicleInfo car: findAllJson()) {
+                totalCars += 1;
+                totalOdo += car.getOdometer();
+                totalGas += car.getGasConsumed();
+                totalOil += car.getOdoLastOilChg();
+                totalEng += car.getEngSizeL();
+            }
+
+            double avgOdo = totalOdo/totalCars;
+            double avgGas = totalGas/totalCars;
+            double avgOil = totalOil/totalCars;
+            double avgEng = totalEng/totalCars;
+
+            String preamble = String.format("<html>\n" +
                     "  <title>Vehicle Telematics Dashboard</title>\n" +
                     "  <body>\n" +
                     "    <h1 align=\"center\">Averages for # vehicles</h1>\n" +
@@ -85,14 +104,15 @@ public class TelematicsService {
                     "            <th>Odometer (miles) |</th><th>Consumption (gallons) |</th><th>Last Oil Change |</th><th>Engine Size (liters)</th>\n" +
                     "        </tr>\n" +
                     "        <tr>\n" +
-                    "            <td align=\"center\">#</td><td align=\"center\">#</td><td align=\"center\">#</td align=\"center\"><td align=\"center\">#</td>\n" +
+                    "            <td align=\"center\">" + "%.1f" + "</td><td align=\"center\">" + "%.1f" + "</td><td align=\"center\">" + "%.1f" + "</td align=\"center\"><td align=\"center\">" + "%.1f" + "</td>\n" +
                     "        </tr>\n" +
                     "    </table>\n" +
                     "    <h1 align=\"center\">History</h1>\n" +
                     "    <table align=\"center\" border=\"1\">\n" +
                     "        <tr>\n" +
                     "            <th>VIN</th><th>Odometer (miles)</th><th>Consumption (gallons)</th><th>Last Oil Change</th><th>Engine Size (liters)</th>\n" +
-                    "        </tr>\n");
+                    "        </tr>\n", avgOdo, avgGas, avgOil, avgEng);
+
 
             String carData="";
             for(VehicleInfo car: findAllJson()) {
